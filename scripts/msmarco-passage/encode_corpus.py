@@ -5,10 +5,10 @@ import os
 import faiss
 import numpy as np
 from tqdm import tqdm
-from transformers import BertModel, BertTokenizer
+from transformers import BertModel, BertTokenizer, DPRContextEncoder, DPRContextEncoderTokenizer
 
 
-def encode_passage(text, tokenizer, model, device='cuda:0'):
+def encode_passage_tct_colbert(text, tokenizer, model, device='cuda:0'):
     max_length = 154  # hardcode for now
     inputs = tokenizer(
         '[CLS] [D] ' + text,
@@ -23,6 +23,14 @@ def encode_passage(text, tokenizer, model, device='cuda:0'):
     return np.mean(embeddings[:, 4:, :], axis=-2).flatten()
 
 
+def encode_passage_dpr(text, tokenizer, model, device='cuda:0'):
+    inputs = tokenizer(text, return_tensors='pt')
+    inputs.to(device)
+    outputs = model(inputs["input_ids"])
+    embeddings = outputs.pooler_output.detach().cpu().numpy()
+    return embeddings.flatten()
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--encoder', type=str, help='encoder name or path', required=True)
@@ -33,8 +41,12 @@ if __name__ == '__main__':
     parser.add_argument('--device', type=str, help='device cpu or cuda [cuda:0, cuda:1...]', default='cuda:0')
     args = parser.parse_args()
 
-    tokenizer = BertTokenizer.from_pretrained(args.encoder)
-    model = BertModel.from_pretrained(args.encoder)
+    if 'dpr' in args.encoder:
+        tokenizer = DPRContextEncoderTokenizer.from_pretrained(args.encoder)
+        model = DPRContextEncoder.from_pretrained(args.encoder)
+    else:
+        tokenizer = BertTokenizer.from_pretrained(args.encoder)
+        model = BertModel.from_pretrained(args.encoder)
     model.to(args.device)
 
     index = faiss.IndexFlatIP(args.dimension)
@@ -53,6 +65,9 @@ if __name__ == '__main__':
                         docid = info['id']
                         text = info['contents']
                         id_file.write(f'{docid}\n')
-                        embedding = encode_passage(text, tokenizer, model, args.device)
+                        if 'dpr' in args.encoder:
+                            embedding = encode_passage_dpr(text, tokenizer, model, args.device)
+                        else:
+                            embedding = encode_passage_tct_colbert(text, tokenizer, model, args.device)
                         index.add(np.array([embedding]))
     faiss.write_index(index, os.path.join(args.index, 'index'))
