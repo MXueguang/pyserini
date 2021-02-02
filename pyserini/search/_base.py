@@ -142,6 +142,12 @@ def get_topics(collection_name):
         topics = JTopicReader.getTopicsWithStringIds(JTopics.DPR_SQUAD_TEST)
     elif collection_name == 'dpr_curated_test':
         topics = JTopicReader.getTopicsWithStringIds(JTopics.DPR_CURATED_TEST)
+    elif collection_name == 'dpr_wq_train':
+        topics = JTopicReader.getTopicsWithStringIds(JTopics.DPR_WQ_TEST)
+    elif collection_name == 'dpr_squad_train':
+        topics = JTopicReader.getTopicsWithStringIds(JTopics.DPR_SQUAD_TEST)
+    elif collection_name == 'dpr_curated_train':
+        topics = JTopicReader.getTopicsWithStringIds(JTopics.DPR_CURATED_TEST)
     else:
         return {}
     t = {}
