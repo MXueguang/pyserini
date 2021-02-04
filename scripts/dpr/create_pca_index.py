@@ -34,6 +34,6 @@ if __name__ == '__main__':
     print("Creat PCA index")
     pca_index.add(vectors_tr)
 
-    faiss.write_index(pca_index, os.path.join(args.pq_index, 'index'))
+    faiss.write_index(pca_index, os.path.join(args.pca_index, 'index'))
 
     faiss.write_VectorTransform(mat, args.model)
