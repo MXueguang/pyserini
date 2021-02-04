@@ -36,6 +36,8 @@ def define_dsearch_args(parser):
     parser.add_argument('--encoder', type=str, metavar='path to query encoder checkpoint or encoder name',
                         required=False,
                         help="Path to query encoder pytorch checkpoint or hgf encoder model name")
+    parser.add_argument('--pca', type=str, metavar='path to pca model', required=False,
+                        help="Path to pca model")
     parser.add_argument('--device', type=str, metavar='device to run query encoder', required=False, default='cpu',
                         help="Device to run query encoder, cpu or [cuda:0, cuda:1, ...]")
     parser.add_argument('--batch-size', type=int, metavar='num', required=False, default=1,
@@ -63,7 +65,7 @@ def init_query_encoder(encoder, topics_name, device):
         elif 'tct_colbert' in encoder:
             return TCTColBERTQueryEncoder(encoder_dir=encoder, device=device)
     if topics_name in encoded_queries:
-        return QueryEncoder.load_encoded_queries(encoded_queries[topics_name])
+        return QueryEncoder.load_encoded_queries(encoded_queries[topics_name], args.pca)
     return None
 
 

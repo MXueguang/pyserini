@@ -31,22 +31,28 @@ from pyserini.util import (download_encoded_queries, download_prebuilt_index,
 
 
 class QueryEncoder:
-    def __init__(self, encoded_query_dir: str = None):
+    def __init__(self, encoded_query_dir: str = None, pca=None):
         self.has_model = False
         self.has_encoded_query = False
+        self.pca = None
         if encoded_query_dir:
             self.embedding = self._load_embeddings(encoded_query_dir)
             self.has_encoded_query = True
+        if pca:
+            self.pca = faiss.read_VectorTransform(pca)
 
     def encode(self, query: str):
+        if self.pca:
+            return self.pca.apply_py(self.embedding[query])
         return self.embedding[query]
 
     @classmethod
-    def load_encoded_queries(cls, encoded_query_name: str):
+    def load_encoded_queries(cls, encoded_query_name: str, pca: str):
         """Build a query encoder from a pre-encoded query; download the encoded queries if necessary.
 
         Parameters
         ----------
+        pca : path to pca model
         encoded_query_name : str
             pre encoded query name.
 
@@ -63,7 +69,7 @@ class QueryEncoder:
             return None
 
         print(f'Initializing {encoded_query_name}...')
-        return cls(encoded_query_dir=query_dir)
+        return cls(encoded_query_dir=query_dir, pca=pca)
 
     @staticmethod
     def _load_embeddings(encoded_query_dir):
