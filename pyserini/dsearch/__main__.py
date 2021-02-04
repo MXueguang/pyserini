@@ -46,7 +46,7 @@ def define_dsearch_args(parser):
                         help="maximum threads to use during search")
 
 
-def init_query_encoder(encoder, topics_name, device):
+def init_query_encoder(encoder, topics_name, device, pca=None):
     encoded_queries = {
         'msmarco_passage_dev_subset': 'msmarco-passage-dev-subset-tct_colbert',
         'dpr_nq_dev': 'dpr-nq-dev-multi',
@@ -65,7 +65,7 @@ def init_query_encoder(encoder, topics_name, device):
         elif 'tct_colbert' in encoder:
             return TCTColBERTQueryEncoder(encoder_dir=encoder, device=device)
     if topics_name in encoded_queries:
-        return QueryEncoder.load_encoded_queries(encoded_queries[topics_name], args.pca)
+        return QueryEncoder.load_encoded_queries(encoded_queries[topics_name], pca)
     return None
 
 
@@ -95,7 +95,7 @@ if __name__ == '__main__':
         print(f'Topic {args.topics} Not Found')
         exit()
 
-    query_encoder = init_query_encoder(args.encoder, args.topics, args.device)
+    query_encoder = init_query_encoder(args.encoder, args.topics, args.device, args.pca)
     if not query_encoder:
         print(f'No encoded queries for topic {args.topics}')
         exit()
