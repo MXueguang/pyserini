@@ -11,7 +11,6 @@ if __name__ == '__main__':
     parser.add_argument('--pq-index', type=str, help='path to hnsw index', required=True)
     parser.add_argument('--dimension', type=int, help='dimension of passage embeddings', required=True)
     parser.add_argument('--M', type=int, help='number of subquantizers', required=True)
-    parser.add_argument('--train_n', type=int, help='number of vectors to train', required=False)
     args = parser.parse_args()
 
     if not os.path.exists(args.pq_index):
@@ -19,7 +18,7 @@ if __name__ == '__main__':
     shutil.copy(os.path.join(args.bf_index, 'docid'), os.path.join(args.pq_index, 'docid'))
 
     bf_index = faiss.read_index(os.path.join(args.bf_index, 'index'))
-    pq_index = faiss.IndexPQ(args.dimension, args.M, 8)
+    pq_index = faiss.IndexPQ(args.dimension, args.M, 8, faiss.METRIC_INNER_PRODUCT)
 
     vectors = bf_index.reconstruct_n(0, bf_index.ntotal)
     print(vectors)
