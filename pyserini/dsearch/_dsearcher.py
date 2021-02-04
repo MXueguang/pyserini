@@ -43,7 +43,7 @@ class QueryEncoder:
 
     def encode(self, query: str):
         if self.pca:
-            return self.pca.apply_py(self.embedding[query])
+            return self.pca.apply_py(np.array([self.embedding[query]]))[0]
         return self.embedding[query]
 
     @classmethod
