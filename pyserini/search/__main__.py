@@ -29,19 +29,12 @@ def write_result(target_file: TextIO, result: Tuple[str, List[JSimpleSearcherRes
                  hits_num: int, msmarco: bool, tag: str):
     topic, hits = result
     docids = [hit.docid.strip() for hit in hits]
-    scores = [hit.score for hit in hits]
-    bm25_score = [hit.metadata['bm25'] for hit in hits]
-    dpr_score = [hit.metadata['dpr'] for hit in hits]
 
     if msmarco:
         for i, docid in enumerate(docids):
-            if i >= hits_num:
-                break
             target_file.write(f'{topic}\t{docid}\t{i + 1}\n')
     else:
         for i, (docid, hit) in enumerate(zip(docids, hits)):
-            if i >= hits_num:
-                break
             score = hit.score
             bm25_score = hit.metadata['bm25']
             dpr_score = hit.metadata['dpr']
