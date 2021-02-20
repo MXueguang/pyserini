@@ -30,6 +30,8 @@ def write_result(target_file: TextIO, result: Tuple[str, List[JSimpleSearcherRes
     topic, hits = result
     docids = [hit.docid.strip() for hit in hits]
     scores = [hit.score for hit in hits]
+    bm25_score = [hit.metadata['bm25'] for hit in hits]
+    dpr_score = [hit.metadata['dpr'] for hit in hits]
 
     if msmarco:
         for i, docid in enumerate(docids):
@@ -37,11 +39,14 @@ def write_result(target_file: TextIO, result: Tuple[str, List[JSimpleSearcherRes
                 break
             target_file.write(f'{topic}\t{docid}\t{i + 1}\n')
     else:
-        for i, (docid, score) in enumerate(zip(docids, scores)):
+        for i, (docid, hit) in enumerate(zip(docids, hits)):
             if i >= hits_num:
                 break
+            score = hit.score
+            bm25_score = hit.metadata['bm25']
+            dpr_score = hit.metadata['dpr']
             target_file.write(
-                f'{topic} Q0 {docid} {i + 1} {score:.6f} {tag}\n')
+                f'{topic} Q0 {docid} {i + 1} {score} {bm25_score} {dpr_score} {tag}\n')
 
 
 def write_result_max_passage(target_file: TextIO, result: Tuple[str, List[JSimpleSearcherResult]],

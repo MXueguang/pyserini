@@ -63,5 +63,7 @@ class HybridSearcher:
                 score = alpha * min_sparse_score + dense_hits[doc]
             else:
                 score = alpha * sparse_hits[doc] + dense_hits[doc]
-            hybrid_result.append(DenseSearchResult(doc, score))
+            dense_score = dense_hits[doc] if doc in dense_hits else -1
+            sparse_score = sparse_hits[doc] if doc in sparse_hits else -1
+            hybrid_result.append(DenseSearchResult(doc, score, {"dpr": dense_score, "bm25": sparse_score}))
         return sorted(hybrid_result, key=lambda x: x.score, reverse=True)[:k]

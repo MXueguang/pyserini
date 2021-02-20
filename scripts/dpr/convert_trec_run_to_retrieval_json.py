@@ -31,7 +31,7 @@ if __name__ == '__main__':
     retrieval = {}
     with open(args.input) as f_in:
         for line in tqdm(f_in.readlines()):
-            question_id, _, doc_id, _, score, _ = line.strip().split()
+            question_id, _, doc_id, _, score, bm25, dpr, _ = line.strip().split()
             question_id = int(question_id)
             question = qas[question_id]['title']
             answers = qas[question_id]['answers']
@@ -42,7 +42,7 @@ if __name__ == '__main__':
             if question_id not in retrieval:
                 retrieval[question_id] = {'question': question, 'answers': answers, 'contexts': []}
             retrieval[question_id]['contexts'].append(
-                {'docid': doc_id, 'score': score, 'text': ctx}
+                {'docid': doc_id, 'hybrid_score': float(score), 'bm25_score': float(bm25), 'dpr_score': float(dpr), 'text': ctx}
             )
 
     json.dump(retrieval, open(args.output, 'w'), indent=4)
