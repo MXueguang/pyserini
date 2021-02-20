@@ -129,7 +129,7 @@ class DPRQueryEncoder(QueryEncoder):
 class DenseSearchResult:
     docid: str
     score: float
-    metadata: dict = None
+    metadata = dict()
 
 
 class SimpleDenseSearcher:
