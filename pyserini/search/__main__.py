@@ -36,8 +36,8 @@ def write_result(target_file: TextIO, result: Tuple[str, List[JSimpleSearcherRes
     else:
         for i, (docid, hit) in enumerate(zip(docids, hits)):
             score = hit.score
-            bm25_score = hit.metadata['bm25']
-            dpr_score = hit.metadata['dpr']
+            bm25_score = hit.bm25
+            dpr_score = hit.dpr
             target_file.write(
                 f'{topic} Q0 {docid} {i + 1} {score} {bm25_score} {dpr_score} {tag}\n')
 
