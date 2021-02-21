@@ -125,12 +125,12 @@ class DPRQueryEncoder(QueryEncoder):
             return super().encode(query)
 
 
-@dataclass
 class DenseSearchResult:
-    docid: str
-    score: float
-    bm25: float
-    dpr: float
+    def __init__(self, a, b, c=-1, d=-1):
+        self.docid = a
+        self.score = b
+        self.bm25 = c
+        self.dpr = d
 
 
 class SimpleDenseSearcher:
