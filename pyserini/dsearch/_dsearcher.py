@@ -129,8 +129,8 @@ class DPRQueryEncoder(QueryEncoder):
 class DenseSearchResult:
     docid: str
     score: float
-    bm25: float = -1
-    dpr: float = -1
+    bm25: float
+    dpr: float
 
 
 class SimpleDenseSearcher:
